@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-acuamatticstore-dev-111246-authRole",
+      "UnauthRoleArn": "arn:aws:iam::839070583785:role/amplify-acuamatticstore-dev-111246-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::839070583785:role/amplify-acuamatticstore-dev-111246-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-acuamatticstore-dev-111246-deployment",
+      "UnauthRoleName": "amplify-acuamatticstore-dev-111246-unauthRole",
+      "StackName": "amplify-acuamatticstore-dev-111246",
+      "StackId": "arn:aws:cloudformation:us-east-1:839070583785:stack/amplify-acuamatticstore-dev-111246/e6ce8440-4686-11ee-bc96-124b6f995b23",
+      "AmplifyAppId": "d1tra3j6n220"
+    }
+  }
+}
