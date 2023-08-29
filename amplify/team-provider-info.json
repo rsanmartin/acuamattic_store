@@ -10,6 +10,11 @@
       "StackName": "amplify-acuamatticstore-dev-111246",
       "StackId": "arn:aws:cloudformation:us-east-1:839070583785:stack/amplify-acuamatticstore-dev-111246/e6ce8440-4686-11ee-bc96-124b6f995b23",
       "AmplifyAppId": "d1tra3j6n220"
+    },
+    "categories": {
+      "auth": {
+        "acuamatticstore0880834f": {}
+      }
     }
   }
 }
