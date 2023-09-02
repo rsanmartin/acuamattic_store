@@ -74,9 +74,9 @@ class EmailConfirmationScreen extends StatelessWidget {
                     obscureText: true,
                     controller: _confirmationCodeController,
                     margin: getMargin(
-                      left: 16,
+                      left: 0,
                     ),
-                    hintText: "Código de confirmación:",
+                    hintText: "Código de confirmación",
                     textInputAction: TextInputAction.done,
                     suffix: Container(
                       margin: getMargin(
@@ -95,6 +95,7 @@ class EmailConfirmationScreen extends StatelessWidget {
                       maxHeight: getVerticalSize(44),
                     ),
                     contentPadding: getPadding(
+                      left: 16,
                       top: 12,
                       bottom: 12,
                     ),
@@ -103,7 +104,7 @@ class EmailConfirmationScreen extends StatelessWidget {
                 CustomElevatedButton(
                   height: getVerticalSize(50),
                   width: getHorizontalSize(218),
-                  text: "Confirmar código",
+                  text: "Confirmar",
                   margin: getMargin(
                     top: 56,
                     right: 65,
@@ -114,6 +115,7 @@ class EmailConfirmationScreen extends StatelessWidget {
                   onTap: () {
                     print('Presss: _createAccountOnPressed');
                     //_createAccountOnPressed(context);
+                    _submitConfirmationCode(context);
                   },
                 ),
                 const Spacer(),
@@ -150,6 +152,7 @@ class EmailConfirmationScreen extends StatelessWidget {
   }
 
   void _gotoHomePageScreen(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => HomePage()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (_) => const HomePage()));
   }
 }

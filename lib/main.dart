@@ -73,7 +73,7 @@ class _AmplifyAuthState extends State<AmplifyAuth> {
   Widget build(BuildContext context) {
     return LoginScreen();
     //return SignUpScreen();
-    /*return EmailConfirmationScreen(
+    /* return EmailConfirmationScreen(
       email: 'rsanmartin@iuvity.com',
     );*/
   }

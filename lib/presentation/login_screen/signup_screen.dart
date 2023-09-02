@@ -14,6 +14,7 @@ class SignUpScreen extends StatelessWidget {
 
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  TextEditingController _confirmPasswordController = TextEditingController();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -97,9 +98,9 @@ class SignUpScreen extends StatelessWidget {
                     obscureText: true,
                     controller: _passwordController,
                     margin: getMargin(
-                      left: 16,
+                      left: 0,
                     ),
-                    hintText: "Contraseña:",
+                    hintText: "Contraseña",
                     textInputAction: TextInputAction.done,
                     suffix: Container(
                       margin: getMargin(
@@ -118,6 +119,45 @@ class SignUpScreen extends StatelessWidget {
                       maxHeight: getVerticalSize(44),
                     ),
                     contentPadding: getPadding(
+                      left: 16,
+                      top: 12,
+                      bottom: 12,
+                    ),
+                  ),
+                ),
+                Container(
+                  width: getHorizontalSize(356),
+                  margin: getMargin(
+                    top: 22,
+                    right: 18,
+                  ),
+                  decoration: AppDecoration.white,
+                  child: CustomTextFormField(
+                    obscureText: true,
+                    controller: _confirmPasswordController,
+                    margin: getMargin(
+                      left: 0,
+                    ),
+                    hintText: "Confirmar contraseña",
+                    textInputAction: TextInputAction.done,
+                    suffix: Container(
+                      margin: getMargin(
+                        left: 30,
+                        top: 13,
+                        bottom: 13,
+                      ),
+                      child: CustomImageView(
+                        svgPath: ImageConstant.imgClose,
+                        onTap: () {
+                          //add clear logic
+                        },
+                      ),
+                    ),
+                    suffixConstraints: BoxConstraints(
+                      maxHeight: getVerticalSize(44),
+                    ),
+                    contentPadding: getPadding(
+                      left: 16,
                       top: 12,
                       bottom: 12,
                     ),
@@ -163,6 +203,12 @@ class SignUpScreen extends StatelessWidget {
 
       if (signUpResult.isSignUpComplete) {
         _gotToEmailConfirmationScreen(context, email);
+      } else {
+        if (signUpResult.nextStep.signUpStep.name == 'confirmSignUp') {
+          _gotToEmailConfirmationScreen(context, email);
+        } else {
+          print('Error en validación de pasos');
+        }
       }
     } on AuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

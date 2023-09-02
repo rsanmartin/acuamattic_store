@@ -95,11 +95,12 @@ class LoginScreen extends StatelessWidget {
                   ),
                   decoration: AppDecoration.white,
                   child: CustomTextFormField(
+                    obscureText: true,
                     controller: passwordController,
                     margin: getMargin(
-                      left: 16,
+                      left: 0,
                     ),
-                    hintText: "Contraseña:",
+                    hintText: "Contraseña",
                     textInputAction: TextInputAction.done,
                     suffix: Container(
                       margin: getMargin(
@@ -115,6 +116,7 @@ class LoginScreen extends StatelessWidget {
                       maxHeight: getVerticalSize(44),
                     ),
                     contentPadding: getPadding(
+                      left: 16,
                       top: 12,
                       bottom: 12,
                     ),
@@ -133,9 +135,10 @@ class LoginScreen extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   onTap: () {
                     //llamar accion de iniciar sesión
+                    _loginProcess(context);
                   },
                 ),
-                Spacer(),
+                const Spacer(),
                 Align(
                   alignment: Alignment.centerRight,
                   child: Padding(
@@ -167,7 +170,7 @@ class LoginScreen extends StatelessWidget {
   }
 
   //métodos
-  Future<void> _loginButtonOnPressed(BuildContext context) async {
+  Future<void> _loginProcess(BuildContext context) async {
     //if (_formKey.currentState.validate()) {
     final email = emailController.text;
     final password = passwordController.text;
