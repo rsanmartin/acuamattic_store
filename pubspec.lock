@@ -34,7 +34,7 @@ packages:
     source: hosted
     version: "0.10.3"
   amplify_core:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: amplify_core
       sha256: bd5dccab537dafe8328f307b7af268c5a8233146a81279c8f221b050fcad60f7
@@ -58,7 +58,7 @@ packages:
     source: hosted
     version: "0.3.1"
   amplify_flutter:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: amplify_flutter
       sha256: "27856e35000606466f59379e9a849a7b99bd2c22f86686e9ee00c7ace78895c2"

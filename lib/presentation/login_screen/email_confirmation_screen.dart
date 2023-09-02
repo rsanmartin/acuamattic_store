@@ -1,20 +1,22 @@
 import 'package:acuamattic_store/core/app_export.dart';
 import 'package:acuamattic_store/presentation/home_page/home_page.dart';
-import 'package:acuamattic_store/presentation/login_screen/signup_screen.dart';
 import 'package:acuamattic_store/widgets/custom_elevated_button.dart';
 import 'package:acuamattic_store/widgets/custom_text_form_field.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({Key? key})
+class EmailConfirmationScreen extends StatelessWidget {
+  final String email;
+
+  EmailConfirmationScreen({Key? key, required this.email})
       : super(
           key: key,
         );
 
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  //TextEditingController _emailController = TextEditingController();
+  TextEditingController _confirmationCodeController = TextEditingController();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -23,6 +25,7 @@ class LoginScreen extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         backgroundColor: appTheme.whiteA700,
         resizeToAvoidBottomInset: false,
         body: Form(
@@ -55,36 +58,9 @@ class LoginScreen extends StatelessWidget {
                       top: 41,
                     ),
                     child: Text(
-                      "Iniciar Sesión",
+                      "An email confirmation code is sent to $email. Please type the code to confirm your email.",
                       style: CustomTextStyles.headlineSmallInterBlack900,
                     ),
-                  ),
-                ),
-                CustomTextFormField(
-                  controller: emailController,
-                  margin: getMargin(
-                    top: 73,
-                    right: 18,
-                  ),
-                  hintText: "Email",
-                  textInputType: TextInputType.emailAddress,
-                  suffix: Container(
-                    margin: getMargin(
-                      left: 30,
-                      top: 13,
-                      bottom: 13,
-                    ),
-                    child: CustomImageView(
-                      svgPath: ImageConstant.imgClose,
-                    ),
-                  ),
-                  suffixConstraints: BoxConstraints(
-                    maxHeight: getVerticalSize(44),
-                  ),
-                  contentPadding: getPadding(
-                    left: 16,
-                    top: 12,
-                    bottom: 12,
                   ),
                 ),
                 Container(
@@ -95,11 +71,12 @@ class LoginScreen extends StatelessWidget {
                   ),
                   decoration: AppDecoration.white,
                   child: CustomTextFormField(
-                    controller: passwordController,
+                    obscureText: true,
+                    controller: _confirmationCodeController,
                     margin: getMargin(
                       left: 16,
                     ),
-                    hintText: "Contraseña:",
+                    hintText: "Código de confirmación:",
                     textInputAction: TextInputAction.done,
                     suffix: Container(
                       margin: getMargin(
@@ -109,6 +86,9 @@ class LoginScreen extends StatelessWidget {
                       ),
                       child: CustomImageView(
                         svgPath: ImageConstant.imgClose,
+                        onTap: () {
+                          //add clear logic
+                        },
                       ),
                     ),
                     suffixConstraints: BoxConstraints(
@@ -123,7 +103,7 @@ class LoginScreen extends StatelessWidget {
                 CustomElevatedButton(
                   height: getVerticalSize(50),
                   width: getHorizontalSize(218),
-                  text: "Iniciar Sesión",
+                  text: "Confirmar código",
                   margin: getMargin(
                     top: 56,
                     right: 65,
@@ -132,32 +112,11 @@ class LoginScreen extends StatelessWidget {
                   buttonTextStyle: CustomTextStyles.titleMediumArialWhiteA700,
                   alignment: Alignment.centerRight,
                   onTap: () {
-                    //llamar accion de iniciar sesión
+                    print('Presss: _createAccountOnPressed');
+                    //_createAccountOnPressed(context);
                   },
                 ),
-                Spacer(),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: getPadding(
-                      right: 22,
-                    ),
-                    child: Text.rich(
-                      TextSpan(
-                          text: "Registrarse",
-                          style: CustomTextStyles.titleMediumInterLightblueA400
-                              .copyWith(
-                            decoration: TextDecoration.underline,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              //llamar accion de iniciar sesión
-                              print('BOTON REGISTRAR');
-                              _gotoSignUpScreen(context);
-                            }),
-                    ),
-                  ),
-                ),
+                const Spacer(),
               ],
             ),
           ),
@@ -166,19 +125,18 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  //métodos
-  Future<void> _loginButtonOnPressed(BuildContext context) async {
-    //if (_formKey.currentState.validate()) {
-    final email = emailController.text;
-    final password = passwordController.text;
-    try {
-      final signInResult = await Amplify.Auth.signIn(
-        username: email,
-        password: password,
-      );
+  //Metodos
 
-      if (signInResult.isSignedIn) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => HomePage()));
+  Future<void> _submitConfirmationCode(BuildContext context) async {
+    //if (_formKey.currentState.validate()) {
+    final confirmationCode = _confirmationCodeController.text;
+    try {
+      final SignUpResult response = await Amplify.Auth.confirmSignUp(
+        username: email,
+        confirmationCode: confirmationCode,
+      );
+      if (response.isSignUpComplete) {
+        _gotoHomePageScreen(context);
       }
     } on AuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -188,16 +146,10 @@ class LoginScreen extends StatelessWidget {
         ),
       );
     }
-
     //}
   }
 
-  void _gotoSignUpScreen(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => SignUpScreen(),
-      ),
-    );
+  void _gotoHomePageScreen(BuildContext context) {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => HomePage()));
   }
 }

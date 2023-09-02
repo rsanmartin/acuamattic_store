@@ -1,20 +1,19 @@
 import 'package:acuamattic_store/core/app_export.dart';
-import 'package:acuamattic_store/presentation/home_page/home_page.dart';
-import 'package:acuamattic_store/presentation/login_screen/signup_screen.dart';
+import 'package:acuamattic_store/presentation/login_screen/email_confirmation_screen.dart';
 import 'package:acuamattic_store/widgets/custom_elevated_button.dart';
 import 'package:acuamattic_store/widgets/custom_text_form_field.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({Key? key})
+class SignUpScreen extends StatelessWidget {
+  SignUpScreen({Key? key})
       : super(
           key: key,
         );
 
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -55,13 +54,13 @@ class LoginScreen extends StatelessWidget {
                       top: 41,
                     ),
                     child: Text(
-                      "Iniciar Sesión",
+                      "Crear cuenta",
                       style: CustomTextStyles.headlineSmallInterBlack900,
                     ),
                   ),
                 ),
                 CustomTextFormField(
-                  controller: emailController,
+                  controller: _emailController,
                   margin: getMargin(
                     top: 73,
                     right: 18,
@@ -95,7 +94,8 @@ class LoginScreen extends StatelessWidget {
                   ),
                   decoration: AppDecoration.white,
                   child: CustomTextFormField(
-                    controller: passwordController,
+                    obscureText: true,
+                    controller: _passwordController,
                     margin: getMargin(
                       left: 16,
                     ),
@@ -109,6 +109,9 @@ class LoginScreen extends StatelessWidget {
                       ),
                       child: CustomImageView(
                         svgPath: ImageConstant.imgClose,
+                        onTap: () {
+                          //add clear logic
+                        },
                       ),
                     ),
                     suffixConstraints: BoxConstraints(
@@ -123,7 +126,7 @@ class LoginScreen extends StatelessWidget {
                 CustomElevatedButton(
                   height: getVerticalSize(50),
                   width: getHorizontalSize(218),
-                  text: "Iniciar Sesión",
+                  text: "Registrarse",
                   margin: getMargin(
                     top: 56,
                     right: 65,
@@ -132,32 +135,11 @@ class LoginScreen extends StatelessWidget {
                   buttonTextStyle: CustomTextStyles.titleMediumArialWhiteA700,
                   alignment: Alignment.centerRight,
                   onTap: () {
-                    //llamar accion de iniciar sesión
+                    print('Presss: _createAccountOnPressed');
+                    _createAccountOnPressed(context);
                   },
                 ),
-                Spacer(),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: getPadding(
-                      right: 22,
-                    ),
-                    child: Text.rich(
-                      TextSpan(
-                          text: "Registrarse",
-                          style: CustomTextStyles.titleMediumInterLightblueA400
-                              .copyWith(
-                            decoration: TextDecoration.underline,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              //llamar accion de iniciar sesión
-                              print('BOTON REGISTRAR');
-                              _gotoSignUpScreen(context);
-                            }),
-                    ),
-                  ),
-                ),
+                const Spacer(),
               ],
             ),
           ),
@@ -166,19 +148,21 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  //métodos
-  Future<void> _loginButtonOnPressed(BuildContext context) async {
+  //Metodos
+  Future<void> _createAccountOnPressed(BuildContext context) async {
     //if (_formKey.currentState.validate()) {
-    final email = emailController.text;
-    final password = passwordController.text;
+    final email = _emailController.text;
+    final password = _passwordController.text;
     try {
-      final signInResult = await Amplify.Auth.signIn(
-        username: email,
-        password: password,
-      );
+      var signUpResult = await Amplify.Auth.signUp(
+          username: email,
+          password: password,
+          options: SignUpOptions(
+            userAttributes: {CognitoUserAttributeKey.email: email},
+          ));
 
-      if (signInResult.isSignedIn) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => HomePage()));
+      if (signUpResult.isSignUpComplete) {
+        _gotToEmailConfirmationScreen(context, email);
       }
     } on AuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -188,15 +172,15 @@ class LoginScreen extends StatelessWidget {
         ),
       );
     }
-
-    //}
+    // TODO: Implment sign-up process
+    // }
   }
 
-  void _gotoSignUpScreen(BuildContext context) {
+  void _gotToEmailConfirmationScreen(BuildContext context, String email) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => SignUpScreen(),
+        builder: (_) => EmailConfirmationScreen(email: email),
       ),
     );
   }
