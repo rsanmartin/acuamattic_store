@@ -1,4 +1,6 @@
 import 'package:acuamattic_store/core/app_export.dart';
+import 'package:acuamattic_store/core/utils/common_utils.dart';
+import 'package:acuamattic_store/core/utils/email_validator_util.dart';
 import 'package:acuamattic_store/presentation/home_page/home_page.dart';
 import 'package:acuamattic_store/presentation/login_screen/signup_screen.dart';
 import 'package:acuamattic_store/widgets/custom_elevated_button.dart';
@@ -76,6 +78,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                     child: CustomImageView(
                       svgPath: ImageConstant.imgClose,
+                      onTap: () => emailController.text = "",
                     ),
                   ),
                   suffixConstraints: BoxConstraints(
@@ -86,6 +89,7 @@ class LoginScreen extends StatelessWidget {
                     top: 12,
                     bottom: 12,
                   ),
+                  validator: (value) => CommonUtils.isValidateEmail(value),
                 ),
                 Container(
                   width: getHorizontalSize(356),
@@ -110,6 +114,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                       child: CustomImageView(
                         svgPath: ImageConstant.imgClose,
+                        onTap: () => passwordController.text = "",
                       ),
                     ),
                     suffixConstraints: BoxConstraints(
@@ -120,6 +125,7 @@ class LoginScreen extends StatelessWidget {
                       top: 12,
                       bottom: 12,
                     ),
+                    validator: (value) => CommonUtils.isPasswordValid(value),
                   ),
                 ),
                 CustomElevatedButton(
@@ -171,28 +177,28 @@ class LoginScreen extends StatelessWidget {
 
   //métodos
   Future<void> _loginProcess(BuildContext context) async {
-    //if (_formKey.currentState.validate()) {
-    final email = emailController.text;
-    final password = passwordController.text;
-    try {
-      final signInResult = await Amplify.Auth.signIn(
-        username: email,
-        password: password,
-      );
+    if (_formKey.currentState!.validate()) {
+      final email = emailController.text;
+      final password = passwordController.text;
+      try {
+        final signInResult = await Amplify.Auth.signIn(
+          username: email,
+          password: password,
+        );
 
-      if (signInResult.isSignedIn) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => HomePage()));
+        if (signInResult.isSignedIn) {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => HomePage()));
+        }
+      } on AuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message),
+            duration: const Duration(seconds: 2),
+          ),
+        );
       }
-    } on AuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.message),
-          duration: const Duration(seconds: 2),
-        ),
-      );
     }
-
-    //}
   }
 
   void _gotoSignUpScreen(BuildContext context) {

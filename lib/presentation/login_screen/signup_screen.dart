@@ -1,4 +1,6 @@
 import 'package:acuamattic_store/core/app_export.dart';
+import 'package:acuamattic_store/core/utils/common_utils.dart';
+import 'package:acuamattic_store/core/utils/email_validator_util.dart';
 import 'package:acuamattic_store/presentation/login_screen/email_confirmation_screen.dart';
 import 'package:acuamattic_store/widgets/custom_elevated_button.dart';
 import 'package:acuamattic_store/widgets/custom_text_form_field.dart';
@@ -76,6 +78,9 @@ class SignUpScreen extends StatelessWidget {
                     ),
                     child: CustomImageView(
                       svgPath: ImageConstant.imgClose,
+                      onTap: () {
+                        _emailController.text = "";
+                      },
                     ),
                   ),
                   suffixConstraints: BoxConstraints(
@@ -86,6 +91,7 @@ class SignUpScreen extends StatelessWidget {
                     top: 12,
                     bottom: 12,
                   ),
+                  validator: (value) => CommonUtils.isValidateEmail(value),
                 ),
                 Container(
                   width: getHorizontalSize(356),
@@ -112,6 +118,7 @@ class SignUpScreen extends StatelessWidget {
                         svgPath: ImageConstant.imgClose,
                         onTap: () {
                           //add clear logic
+                          _passwordController.text = "";
                         },
                       ),
                     ),
@@ -123,6 +130,9 @@ class SignUpScreen extends StatelessWidget {
                       top: 12,
                       bottom: 12,
                     ),
+                    validator: (value) {
+                      return CommonUtils.isPasswordValid(value);
+                    },
                   ),
                 ),
                 Container(
@@ -150,6 +160,7 @@ class SignUpScreen extends StatelessWidget {
                         svgPath: ImageConstant.imgClose,
                         onTap: () {
                           //add clear logic
+                          _confirmPasswordController.text = "";
                         },
                       ),
                     ),
@@ -161,6 +172,10 @@ class SignUpScreen extends StatelessWidget {
                       top: 12,
                       bottom: 12,
                     ),
+                    validator: (value) {
+                      return CommonUtils.isConfirmationPasswordValid(
+                          _passwordController.text, value);
+                    },
                   ),
                 ),
                 CustomElevatedButton(
@@ -190,36 +205,36 @@ class SignUpScreen extends StatelessWidget {
 
   //Metodos
   Future<void> _createAccountOnPressed(BuildContext context) async {
-    //if (_formKey.currentState.validate()) {
-    final email = _emailController.text;
-    final password = _passwordController.text;
-    try {
-      var signUpResult = await Amplify.Auth.signUp(
-          username: email,
-          password: password,
-          options: SignUpOptions(
-            userAttributes: {CognitoUserAttributeKey.email: email},
-          ));
+    if (_formKey.currentState!.validate()) {
+      final email = _emailController.text;
+      final password = _passwordController.text;
+      try {
+        var signUpResult = await Amplify.Auth.signUp(
+            username: email,
+            password: password,
+            options: SignUpOptions(
+              userAttributes: {CognitoUserAttributeKey.email: email},
+            ));
 
-      if (signUpResult.isSignUpComplete) {
-        _gotToEmailConfirmationScreen(context, email);
-      } else {
-        if (signUpResult.nextStep.signUpStep.name == 'confirmSignUp') {
+        if (signUpResult.isSignUpComplete) {
           _gotToEmailConfirmationScreen(context, email);
         } else {
-          print('Error en validación de pasos');
+          if (signUpResult.nextStep.signUpStep.name == 'confirmSignUp') {
+            _gotToEmailConfirmationScreen(context, email);
+          } else {
+            print('Error en validación de pasos');
+          }
         }
+      } on AuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message),
+            duration: const Duration(seconds: 2),
+          ),
+        );
       }
-    } on AuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.message),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      // TODO: Implment sign-up process
     }
-    // TODO: Implment sign-up process
-    // }
   }
 
   void _gotToEmailConfirmationScreen(BuildContext context, String email) {

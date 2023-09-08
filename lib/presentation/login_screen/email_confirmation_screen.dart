@@ -99,6 +99,13 @@ class EmailConfirmationScreen extends StatelessWidget {
                       top: 12,
                       bottom: 12,
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please Enter Confirmation Code.";
+                      }
+
+                      return null;
+                    },
                   ),
                 ),
                 CustomElevatedButton(
@@ -130,25 +137,25 @@ class EmailConfirmationScreen extends StatelessWidget {
   //Metodos
 
   Future<void> _submitConfirmationCode(BuildContext context) async {
-    //if (_formKey.currentState.validate()) {
-    final confirmationCode = _confirmationCodeController.text;
-    try {
-      final SignUpResult response = await Amplify.Auth.confirmSignUp(
-        username: email,
-        confirmationCode: confirmationCode,
-      );
-      if (response.isSignUpComplete) {
-        _gotoHomePageScreen(context);
+    if (_formKey.currentState!.validate()) {
+      final confirmationCode = _confirmationCodeController.text;
+      try {
+        final SignUpResult response = await Amplify.Auth.confirmSignUp(
+          username: email,
+          confirmationCode: confirmationCode,
+        );
+        if (response.isSignUpComplete) {
+          _gotoHomePageScreen(context);
+        }
+      } on AuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message),
+            duration: const Duration(seconds: 2),
+          ),
+        );
       }
-    } on AuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.message),
-          duration: const Duration(seconds: 2),
-        ),
-      );
     }
-    //}
   }
 
   void _gotoHomePageScreen(BuildContext context) {

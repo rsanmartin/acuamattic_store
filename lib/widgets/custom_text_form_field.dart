@@ -101,6 +101,19 @@ class CustomTextFormField extends StatelessWidget {
         ),
       );
   InputDecoration get decoration => InputDecoration(
+        errorStyle: const TextStyle(color: Colors.red, fontSize: 16),
+        errorBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4)),
+            borderSide: BorderSide(
+              width: 1,
+              color: Colors.red,
+            )),
+        focusedErrorBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4)),
+            borderSide: BorderSide(
+              width: 1,
+              color: Colors.red,
+            )),
         hintText: hintText ?? "",
         hintStyle: hintStyle ?? theme.textTheme.bodyLarge,
         prefixIcon: prefix,
